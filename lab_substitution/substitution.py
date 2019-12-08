@@ -1,11 +1,6 @@
-import random
-from lab_substitution.utils import get_greatest_number_of_range
-
-
 class Substitution:
     def __init__(self, dictionary: list):
         self.__dictionary = dictionary
-        self.__coefficient = random.randint(1, get_greatest_number_of_range(1, len(dictionary)))
 
     def get_dictionary_length(self) -> int:
         return len(self.__dictionary)
@@ -41,11 +36,33 @@ class Substitution:
             key_index += 1
 
             encrypted_letter = self.get_letter_by_index(
-                (self.__coefficient * phrase_letter_index + key_letter_index) % dict_len - 1)
+                (phrase_letter_index + key_letter_index) % dict_len - 1)
             encrypted_phrase += encrypted_letter
 
         return encrypted_phrase
 
     def decrypt(self, phrase: str, key: str) -> str:
+        dict_len = self.get_dictionary_length()
+        key_len = len(key)
+
+        decrypted_phrase = ''
+
+        key_index = 0
         for letter in phrase:
-            pass
+            phrase_letter_index = self.get_index_of_letter(letter) + 1
+
+            if key_index == key_len:
+                key_index = 0
+
+            key_letter_index = self.get_index_of_letter(key[key_index]) + 1
+            key_index += 1
+
+            if phrase_letter_index <= key_letter_index:
+                phrase_letter_index += dict_len
+
+            decrypted_letter = self.get_letter_by_index(
+                int((phrase_letter_index - key_letter_index) - 1))
+
+            decrypted_phrase += decrypted_letter
+
+        return decrypted_phrase

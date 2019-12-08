@@ -10,3 +10,4 @@ encrypted_phrase = substitution.encrypt(phrase, key)
 print('Зашифрованная фраза:', encrypted_phrase)
 
 decrypted_phrase = substitution.decrypt(encrypted_phrase, key)
+print('Расшифрованная фраза:', decrypted_phrase)
