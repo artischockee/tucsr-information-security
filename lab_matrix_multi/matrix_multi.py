@@ -1,4 +1,6 @@
+import math
 import random
+import numpy as np
 
 from lab_matrix_multi.utils import get_appropriate_phrase_len, divide_chunks
 
@@ -8,6 +10,9 @@ class MatrixMulti:
         self.__dictionary = dictionary
         self.__augment_symbol = augment_symbol
         self.__key_matrix_side = 3
+
+    def get_dictionary_length(self) -> int:
+        return len(self.__dictionary)
 
     def __get_processed_phrase(self, phrase: str) -> str:
         phrase_len = len(phrase)
@@ -46,6 +51,11 @@ class MatrixMulti:
         except ValueError:
             return index
 
+    def get_letter_by_index(self, index: int) -> str:
+        if index not in range(self.get_dictionary_length()):
+            return ''
+        return self.__dictionary[index]
+
     def __get_pre_encrypted_phrase(self, phrase: str) -> list:
         pre_encrypted_phrase = []
         for letter in phrase:
@@ -55,7 +65,7 @@ class MatrixMulti:
         return pre_encrypted_phrase
 
     @staticmethod
-    def __get_multiplication_result(chunk: list, matrix: list) -> list:
+    def get_multiplication_result(chunk: list, matrix: list) -> list:
         total_result = []
         for cols in matrix:
             cell_result = 0
@@ -78,6 +88,26 @@ class MatrixMulti:
         encrypted_phrase = []
 
         for chunk in chunks:
-            encrypted_phrase += self.__get_multiplication_result(chunk, key_matrix)
+            encrypted_phrase += self.get_multiplication_result(chunk, key_matrix)
 
         return encrypted_phrase
+
+    def decrypt(self, phrase: list, key_sequence: list) -> str or None:
+        if len(key_sequence) != math.pow(self.__key_matrix_side, 2):
+            print('Key matrix size is not appropriate for the decryption process. Abort.')
+            return
+
+        phrase_chunks = list(divide_chunks(phrase, self.__key_matrix_side))
+        key_matrix = np.array(list(divide_chunks(key_sequence, self.__key_matrix_side)))
+        key_matrix_inverted = np.linalg.inv(key_matrix)
+
+        pre_decrypted_phrase = []
+        for chunk in phrase_chunks:
+            chunk_multiplication_result = key_matrix_inverted.dot(np.array(chunk))
+            pre_decrypted_phrase += list(chunk_multiplication_result)
+
+        decrypted_phrase = ''
+        for number in pre_decrypted_phrase:
+            decrypted_phrase += self.get_letter_by_index(int(round(number)) - 1)
+
+        return decrypted_phrase

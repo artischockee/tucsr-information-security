@@ -8,5 +8,8 @@ phrase = input('Введите фразу (на русском), подлежа�
 encrypted_phrase = matrix_multi.encrypt(phrase)
 print('Зашифрованная фраза:', encrypted_phrase)
 
-# decrypted_phrase = matrix_multi.decrypt(encrypted_phrase, key)
-# print('Расшифрованная фраза:', decrypted_phrase)
+key = input('Введите ключ дешифровки (числа через пробел, без запятых): ')
+key_sequence = list(map(int, list(key.split(' '))))
+
+decrypted_phrase = matrix_multi.decrypt(encrypted_phrase, key_sequence)
+print('Расшифрованная фраза:', decrypted_phrase)
